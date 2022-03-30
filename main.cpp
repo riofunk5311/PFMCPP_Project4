@@ -197,10 +197,8 @@ int IntType::divide( int lhs, int rhs )
         
         return lhs;
     }
-    else
-    {
-        return lhs /rhs;
-    }
+        
+    return lhs /rhs;
 }
 
 
