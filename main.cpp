@@ -190,11 +190,7 @@ int IntType::multiply( int lhs, int rhs )
 
 int IntType::divide( int lhs, int rhs )
 {
-    if ( rhs > lhs )
-    {
-        return 0;
-    }
-    else if ( rhs == 0)
+    if ( rhs == 0)
     {
         std::cout << "error, integer division by zero will crash the program!" << std::endl;
         std::cout << "returning lhs" << std::endl;
