@@ -192,12 +192,14 @@ struct HeapAllocatedInt { };
 
 struct FloatType
 {
-    HeapAllocatedFloat* value = nullptr;
-    FloatType() : value( new HeapAllocatedFloat() ) { }
+    
+    FloatType(HeapAllocatedFloat floatOnHeap) : value( new HeapAllocatedFloat(floatOnHeap) ) { }
     ~FloatType()
     {
         delete value;
     }
+
+    HeapAllocatedFloat* value = nullptr;
 
     float add( float lhs, float rhs );
     float subtract( float lhs, float rhs );
@@ -235,7 +237,7 @@ float FloatType::divide( float lhs, float rhs )
 
 struct DoubleType
 {
-    DoubleType() : value( new HeapAllocatedDouble() ) { }
+    DoubleType(HeapAllocatedDouble doubleOnHeap) : value( new HeapAllocatedDouble(doubleOnHeap) ) { }
     ~DoubleType()
     {
         delete value;
@@ -277,7 +279,7 @@ double DoubleType::divide( double lhs, double rhs )
 // Int Type
 struct IntType
 {
-    IntType() : value( new HeapAllocatedInt() ) { }
+    IntType(HeapAllocatedInt intOnHeap) : value( new HeapAllocatedInt(intOnHeap) ) { }
     ~IntType()
     {
         delete value;
