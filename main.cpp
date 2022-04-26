@@ -14,15 +14,18 @@ New/This/Pointers/References conclusion
          on the heap without leaking, without using smart pointers. 
  */
 
+struct A { };
 
+struct HeapA
+{
+    HeapA() : ptrToA( new A() ) { }
+    ~HeapA()
+    {
+       delete ptrToA;
+    }
 
-
-
-
-
-
-
-
+    A* ptrToA = nullptr;
+};
 
  /*
  1) Edit your 3 structs so that they own a heap-allocated primitive type without using smart pointers named 'value'
@@ -181,10 +184,21 @@ int main()
 
 #include <iostream>
 
+struct HeapAllocatedFloat { };
+struct HeapAllocatedDouble { };
+struct HeapAllocatedInt { };
+
 // Float Type
 
 struct FloatType
 {
+    HeapAllocatedFloat* value = nullptr;
+    FloatType() : value( new HeapAllocatedFloat() ) { }
+    ~FloatType()
+    {
+        delete value;
+    }
+
     float add( float lhs, float rhs );
     float subtract( float lhs, float rhs );
     float multiply( float lhs, float rhs );
@@ -221,6 +235,14 @@ float FloatType::divide( float lhs, float rhs )
 
 struct DoubleType
 {
+    DoubleType() : value( new HeapAllocatedDouble() ) { }
+    ~DoubleType()
+    {
+        delete value;
+    }
+    
+    HeapAllocatedDouble* value = nullptr;
+
     double add( double lhs, double rhs );
     double subtract( double lhs, double rhs );
     double multiply( double lhs, double rhs );
@@ -255,6 +277,14 @@ double DoubleType::divide( double lhs, double rhs )
 // Int Type
 struct IntType
 {
+    IntType() : value( new HeapAllocatedInt() ) { }
+    ~IntType()
+    {
+        delete value;
+    }
+    
+    HeapAllocatedInt* value = nullptr;
+
     int add( int lhs, int rhs );
     int subtract( int lhs, int rhs );
     int multiply( int lhs, int rhs );
