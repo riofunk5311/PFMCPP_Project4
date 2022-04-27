@@ -9,9 +9,9 @@ New/This/Pointers/References conclusion
     Build/Run often with this task to make sure you're not breaking the code with each step.
     I recommend committing after you get each step working so you can revert to a working version easily if needed.
  
- 0) in the blank space below, declare/define an empty struct named 'A' on a single Line. 
-     on the lines below it, write a struct named 'HeapA' that correctly shows how to own an instance of 'A' 
-         on the heap without leaking, without using smart pointers. 
+ 0) in the blank space below, declare/define an empty struct named 'A' on a single Line.
+     on the lines below it, write a struct named 'HeapA' that correctly shows how to own an instance of 'A'
+         on the heap without leaking, without using smart pointers.
  */
 
 struct A { };
@@ -26,6 +26,7 @@ struct HeapA
 
     A* ptrToA = nullptr;
 };
+
 
  /*
  1) Edit your 3 structs so that they own a heap-allocated primitive type without using smart pointers named 'value'
@@ -62,7 +63,7 @@ struct HeapA
 /*
 your program should generate the following output EXACTLY.
 This includes the warnings.
-Use a service like https://www.diffchecker.com/diff to compare your output. 
+Use a service like https://www.diffchecker.com/diff to compare your output.
 you'll learn to solve the conversion warnings in the next project part.
 
 18 warnings generated.
@@ -87,11 +88,11 @@ New value of ft = (ft + 3.0f) * 1.5f / 5.0f = 0.975
 
 Initial value of dt: 0.8
 Initial value of it: 590
-Use of function concatenation (mixed type arguments) 
+Use of function concatenation (mixed type arguments)
 New value of dt = (dt * it) / 5.0f + ft = 95.375
 ---------------------
 
-Intercept division by 0 
+Intercept division by 0
 New value of it = it / 0 = error: integer division by zero is an error and will crash the program!
 590
 New value of ft = ft / 0 = warning: floating point division by zero!
@@ -111,9 +112,9 @@ good to go!
 #include <iostream>
 
 int main()
-{   
+{
     //testing instruction 0
-    HeapA heapA; 
+    HeapA heapA;
 
     //assign heap primitives
     FloatType ft ( 2.0f );
@@ -140,7 +141,7 @@ int main()
     // --------
     std::cout << "New value of ft = (ft + 3.0f) * 1.5f / 5.0f = " << ft.add( 3.0f ).multiply(1.5f).divide(5.0f).value << std::endl;
        
-    std::cout << "---------------------\n" << std::endl; 
+    std::cout << "---------------------\n" << std::endl;
     
     // DoubleType/IntType object instanciation and method tests
     // --------
@@ -150,7 +151,7 @@ int main()
     std::cout << "Use of function concatenation (mixed type arguments) " << std::endl;
     std::cout << "New value of dt = (dt * it) / 5.0f + ft = " << (dt.multiply(it).divide(5.0f).add(ft).value) << std::endl;
 
-    std::cout << "---------------------\n" << std::endl; 
+    std::cout << "---------------------\n" << std::endl;
     
     // Intercept division by 0
     // --------
@@ -159,7 +160,7 @@ int main()
     std::cout << "New value of ft = ft / 0 = " << ft.divide(0).value << std::endl;
     std::cout << "New value of dt = dt / 0 = " << dt.divide(0).value << std::endl;
 
-    std::cout << "---------------------\n" << std::endl; 
+    std::cout << "---------------------\n" << std::endl;
 
     std::cout << "good to go!\n";
 
@@ -173,7 +174,7 @@ int main()
 
  Commit your changes by clicking on the Source Control panel on the left, entering a message, and click [Commit and push].
  
- If you didn't already: 
+ If you didn't already:
     Make a pull request after you make your first commit
     pin the pull request link and this repl.it link to our DM thread in a single message.
 
@@ -184,7 +185,7 @@ int main()
 
 #include <iostream>
 
-struct HeapAllocatedFloat { };
+struct FloatType;
 struct HeapAllocatedDouble { };
 struct HeapAllocatedInt { };
 
@@ -192,44 +193,43 @@ struct HeapAllocatedInt { };
 
 struct FloatType
 {
-    
-    FloatType(HeapAllocatedFloat floatOnHeap) : value( new HeapAllocatedFloat(floatOnHeap) ) { }
+    FloatType(float floatOnHeap) : value( new float(floatOnHeap) ) { }
     ~FloatType()
     {
         delete value;
     }
-
-    HeapAllocatedFloat* value = nullptr;
-
-    float add( float lhs, float rhs );
-    float subtract( float lhs, float rhs );
-    float multiply( float lhs, float rhs );
-    float divide( float lhs, float rhs );
+    
+    float* value = nullptr;
+    
+    FloatType& add( float lhs, float rhs );
+    FloatType& subtract( float lhs, float rhs );
+    FloatType& multiply( float lhs, float rhs );
+    FloatType& divide( float lhs, float rhs );
 };
 
-float FloatType::add(float lhs, float rhs)
+FloatType& FloatType::add( float lhs, float rhs )
 {
-    return lhs + rhs;
+    return *this;
 }
 
-float FloatType::subtract( float lhs, float rhs )
+FloatType& FloatType::subtract( float lhs, float rhs )
 {
-    return lhs - rhs;
+    return *this;
 }
 
-float FloatType::multiply( float lhs, float rhs )
+FloatType& FloatType::multiply( float lhs, float rhs )
 {
-    return lhs * rhs;
+    return *this;
 }
 
-float FloatType::divide( float lhs, float rhs )
+FloatType& FloatType::divide( float lhs, float rhs )
 {
     if ( rhs == 0.f )
     {
         std::cout << "warning, floating point division by zero returns 'inf' !" << std::endl;
     }
     
-    return lhs / rhs; 
+    return *this;
     
 }
 
@@ -237,94 +237,94 @@ float FloatType::divide( float lhs, float rhs )
 
 struct DoubleType
 {
-    DoubleType(HeapAllocatedDouble doubleOnHeap) : value( new HeapAllocatedDouble(doubleOnHeap) ) { }
+    DoubleType(double doubleOnHeap) : value( new double(doubleOnHeap) ) { }
     ~DoubleType()
     {
         delete value;
     }
     
-    HeapAllocatedDouble* value = nullptr;
-
-    double add( double lhs, double rhs );
-    double subtract( double lhs, double rhs );
-    double multiply( double lhs, double rhs );
-    double divide( double lhs, double rhs );
+    double* value = nullptr;
+    
+    DoubleType& add( double lhs, double rhs );
+    DoubleType& subtract( double lhs, double rhs );
+    DoubleType& multiply( double lhs, double rhs );
+    DoubleType& divide( double lhs, double rhs );
 };
 
-double DoubleType::add( double lhs, double rhs )
+DoubleType& DoubleType::add( double lhs, double rhs )
 {
-    return lhs + rhs;
+    return *this;
 }
 
-double DoubleType::subtract( double lhs, double rhs )
+DoubleType&  DoubleType::subtract( double lhs, double rhs )
 {
-    return lhs - rhs;
+    return *this;
 }
 
-double DoubleType::multiply( double lhs, double rhs )
+DoubleType&  DoubleType::multiply( double lhs, double rhs )
 {
-    return lhs * rhs;
+    return *this;
 }
 
-double DoubleType::divide( double lhs, double rhs )
+DoubleType&  DoubleType::divide( double lhs, double rhs )
 {
     if ( rhs == 0.0 )
     {
         std::cout << "warning, floating point division by zero returns 'inf' !" << std::endl;
     }
     
-    return lhs / rhs;
+    return *this;
 }
 
 // Int Type
 struct IntType
 {
-    IntType(HeapAllocatedInt intOnHeap) : value( new HeapAllocatedInt(intOnHeap) ) { }
+    IntType(int intOnHeap) : value( new int(intOnHeap) ) { }
     ~IntType()
     {
         delete value;
     }
     
-    HeapAllocatedInt* value = nullptr;
-
-    int add( int lhs, int rhs );
-    int subtract( int lhs, int rhs );
-    int multiply( int lhs, int rhs );
-    int divide( int lhs, int rhs );
+    int* value = nullptr;
+    
+    IntType& add( int lhs, int rhs );
+    IntType& subtract( int lhs, int rhs );
+    IntType& multiply( int lhs, int rhs );
+    IntType& divide( int lhs, int rhs );
 };
 
-int IntType::add( int lhs, int rhs )
+IntType& IntType::add( int lhs, int rhs )
 {
-    return lhs + rhs;
+    return *this;
 }
 
-int IntType::subtract( int lhs, int rhs )
+IntType& IntType::subtract( int lhs, int rhs )
 {
-    return lhs - rhs;
+    return *this;
 }
 
-int IntType::multiply( int lhs, int rhs )
+IntType& IntType::multiply( int lhs, int rhs )
 {
-    return lhs * rhs;
+    return *this;
 }
 
-int IntType::divide( int lhs, int rhs )
+IntType& IntType::divide( int lhs, int rhs )
 {
     if ( rhs == 0)
     {
         std::cout << "error, integer division by zero will crash the program!" << std::endl;
         std::cout << "returning lhs" << std::endl;
         
-        return lhs;
+        return *this;
     }
         
-    return lhs /rhs;
+    return *this;
 }
 
 
-int main() 
+int main()
 {
-    FloatType ft;
+    FloatType& ft;
     std::cout << "result of ft.add(): " << ft.add( 123.456f, 432.1f) << std::endl;
     std::cout << "result of ft.subtract(): " << ft.subtract( 123.456f, 432.1f) << std::endl;
     std::cout << "result of ft.multiply(): " << ft.multiply( 123.456f, 432.1f) << std::endl;
