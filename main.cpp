@@ -133,7 +133,7 @@ struct FloatType
         delete value;
     }
     
-    operator float() { return *value; }
+    operator float() const { return *value; }
     
     FloatType& add( float fl );
     FloatType& subtract( float fl);
@@ -155,7 +155,7 @@ struct DoubleType
         delete value;
     }
     
-    operator double() { return *value; }
+    operator double() const { return *value; }
     
     DoubleType& add( double db );
     DoubleType& subtract( double db );
@@ -175,7 +175,7 @@ struct IntType
         delete value;
     }
     
-    operator int() { return *value; }
+    operator int() const { return *value; }
     
     IntType& add( int it );
     IntType& subtract( int it );
