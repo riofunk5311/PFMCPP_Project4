@@ -189,7 +189,7 @@ struct IntType;
 
 struct FloatType
 {
-    FloatType(float floatOnHeap) : value( new float(floatOnHeap) ) { }
+    explicit FloatType(float floatOnHeap) : value( new float(floatOnHeap) ) { }
     ~FloatType()
     {
         delete value;
@@ -218,7 +218,7 @@ private:
 
 struct DoubleType
 {
-    DoubleType(double doubleOnHeap) : value( new double(doubleOnHeap) ) { }
+    explicit DoubleType(double doubleOnHeap) : value( new double(doubleOnHeap) ) { }
     ~DoubleType()
     {
         delete value;
@@ -244,7 +244,7 @@ private:
 // Int Type
 struct IntType
 {
-    IntType(int intOnHeap) : value( new int(intOnHeap) ) { }
+    explicit IntType(int intOnHeap) : value( new int(intOnHeap) ) { }
     ~IntType()
     {
         delete value;
@@ -304,6 +304,11 @@ FloatType& FloatType::powInternal( const float fl )
     return *this;
 }
 
+FloatType& FloatType::pow( float fl )
+{
+    return powInternal( fl );
+}
+
 FloatType& FloatType::pow( const FloatType& fl )
 {
     return powInternal( fl );
@@ -354,6 +359,11 @@ DoubleType& DoubleType::powInternal( const double db )
 {
     *value = std::pow( *value, db );
     return *this;
+}
+
+DoubleType& DoubleType::pow( double db )
+{
+    return powInternal( db );
 }
 
 DoubleType& DoubleType::pow( const DoubleType& db)
@@ -410,6 +420,11 @@ IntType& IntType::powInternal( const int it )
     return *this;
 }
 
+IntType& IntType::pow( int it )
+{
+    return powInternal( it );
+}
+
 IntType& IntType::pow( const IntType& it )
 {
     return powInternal( it );
@@ -452,6 +467,13 @@ struct Point
     {
         x *= static_cast<float>(db);
         y *= static_cast<float>(db);
+        return *this;
+    }
+    
+    Point& multiply(IntType& it)
+    {
+        x *= it;
+        y *= it;
         return *this;
     }
 
