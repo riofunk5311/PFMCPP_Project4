@@ -479,7 +479,7 @@ struct Point
 
     void toString()
     {
-        std::cout << "x: " << x << "y: " << y << std::endl;
+        std::cout << "Point { x: " << x << ", y: " << y << " }"<< std::endl;
     }
 private:
     float x{0}, y{0};
