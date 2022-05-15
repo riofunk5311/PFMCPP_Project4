@@ -53,25 +53,6 @@ Project 4: Part 4 / 9
  You will need to use Forward Declaration and out-of-class definitions to complete this.
  */
 
-#include <iostream>
-#include <cmath>
-
-struct FloatType;
-struct DoubleType;
-struct IntType;
-
-struct Point
-{
-    Point& multiply(float m)
-    {
-        x *= m;
-        y *= m;
-        return *this;
-    }
-private:
-    float x{0}, y{0};
-};
-
 /*
 your program should generate the following output EXACTLY.
 This includes the warnings.
@@ -183,9 +164,6 @@ struct HeapA
     A* a = nullptr;
 };
 
-
-
-
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
 
@@ -199,6 +177,13 @@ struct HeapA
 
  Wait for my code review.
  */
+
+#include <iostream>
+#include <cmath>
+
+struct FloatType;
+struct DoubleType;
+struct IntType;
 
 // Float Type
 
@@ -439,6 +424,44 @@ IntType& IntType::pow( const DoubleType& db )
 {
     return powInternal( static_cast<int>(db) );
 }
+
+// Point
+
+struct Point
+{
+    Point( float fl1, float fl2 ) : x( fl1 ), y( fl2 ) {}
+    Point( FloatType& fl1, FloatType& fl2 ) : Point( static_cast<float>(fl1), static_cast<float>(fl2) ) {}
+    Point( DoubleType& fl1, DoubleType& fl2 ) : Point( static_cast<float>(fl1), static_cast<float>(fl2) ) {}
+    Point( IntType& fl1, IntType& fl2 ) : Point( static_cast<float>(fl1), static_cast<float>(fl2) ) {}
+
+    Point& multiply(float m)
+    {
+        x *= m;
+        y *= m;
+        return *this;
+    }
+
+    Point& multiply(FloatType& fl)
+    {
+        x *= fl;
+        y *= fl;
+        return *this;
+    }
+
+    Point& multiply(DoubleType& db)
+    {
+        x *= static_cast<float>(db);
+        y *= static_cast<float>(db);
+        return *this;
+    }
+
+    void toString()
+    {
+        std::cout << "x: " << x << "y: " << y << std::endl;
+    }
+private:
+    float x{0}, y{0};
+};
 
 void part3()
 {
