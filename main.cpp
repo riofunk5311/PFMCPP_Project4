@@ -3,16 +3,16 @@ Project 4: Part 5 / 9
  video: Chapter 5 Part 2
  Operator Overloading.
 
-Do not delete your previous main. 
+Do not delete your previous main.
 
  Create a branch named Part5
 
     Build/Run often with this task to make sure you're not breaking the code with each step.
     I recommend committing after you get each step working so you can revert to a working version easily if needed.
  
- 1) replace the add/subtract/multiply/etc functions in your UDTs with overloaded math operators 
+ 1) replace the add/subtract/multiply/etc functions in your UDTs with overloaded math operators
         e.g. add() would become operator+=() because it modifies the internal heap-allocated object.
-        The easiest way to do this is to just rename your member functions.  
+        The easiest way to do this is to just rename your member functions.
         Do not: delete your member functions and add new ones.  Simply rename them
         You do not need to change the Point class's multiply() functions.
  
@@ -21,7 +21,7 @@ Do not delete your previous main.
  
  3) don't delete your conversion functions.
  
- 4) your main() function should be the same as Project 4 part 4, 
+ 4) your main() function should be the same as Project 4 part 4,
     excluding the changes made due to 1)
      
  5) delete the example below after it makes sense how your code will change due to 1).
@@ -36,10 +36,10 @@ namespace Example
         IntType intNum(2);
         IntType intNum2(6);
 
-        /* 
+        /*
         if you previously had a line like this demonstrating chaining:
-            
-            intNum.add(3).add(4.5f).divide(floatNum); 
+
+            intNum.add(3).add(4.5f).divide(floatNum);
 
         it should become:
         */
@@ -47,7 +47,7 @@ namespace Example
         intNum += 4.5f;
         intNum /= floatNum;
         std::cout << "intNum: " << intNum << std::endl;
-        
+
         return 0;
     }
 }
@@ -61,7 +61,7 @@ namespace Example
 
 /*
 your program should generate the following output EXACTLY.
-This includes any warnings included below.  
+This includes any warnings included below.
 
 The output should have zero warnings.
 
@@ -87,11 +87,11 @@ New value of ft = (ft + 3.0f) * 1.5f / 5.0f = 0.975
 
 Initial value of dt: 0.8
 Initial value of it: 590
-Use of function concatenation (mixed type arguments) 
+Use of function concatenation (mixed type arguments)
 New value of dt = (dt * it) / 5.0f + ft = 95.375
 ---------------------
 
-Intercept division by 0 
+Intercept division by 0
 New value of it = it / 0 = error: integer division by zero is an error and will crash the program!
 590
 New value of ft = ft / 0 = warning: floating point division by zero!
@@ -103,28 +103,28 @@ inf
 The result of FloatType^4 divided by IntType is: 26.9136
 The result of DoubleType times 3 plus IntType is : 67.3
 The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: 711
-An operation followed by attempts to divide by 0, which are ignored and warns user: 
+An operation followed by attempts to divide by 0, which are ignored and warns user:
 error: integer division by zero is an error and will crash the program!
 error: integer division by zero is an error and will crash the program!
 error: integer division by zero is an error and will crash the program!
 505521
 FloatType x IntType  =  13143546
 (IntType + DoubleType + FloatType) x 24 = 315447336
-Power tests with FloatType 
+Power tests with FloatType
 pow(ft1, floatExp) = 2^2 = 4
 pow(ft1, itExp) = 4^2 = 16
 pow(ft1, ftExp) = 16^2 = 256
 pow(ft1, dtExp) = 256^2 = 65536
 ---------------------
 
-Power tests with DoubleType 
+Power tests with DoubleType
 pow(dt1, doubleExp) = 2^2 = 4
 pow(dt1, itExp) = 4^2 = 16
 pow(dt1, ftExp) = 16^2 = 256
 pow(dt1, dtExp) = 256^2 = 65536
 ---------------------
 
-Power tests with IntType 
+Power tests with IntType
 pow(it1, intExp) = 2^2 = 4
 pow(it1, itExp) = 4^2 = 16
 pow(it1, ftExp) = 16^2 = 256
@@ -157,7 +157,7 @@ Point { x: 15, y: 20 }
 
 good to go!
 
-Use a service like https://www.diffchecker.com/diff to compare your output. 
+Use a service like https://www.diffchecker.com/diff to compare your output.
 */
 
 
@@ -205,10 +205,10 @@ struct FloatType
     
     operator float() const { return *value; }
     
-    FloatType& add( float fl );
-    FloatType& subtract( float fl);
-    FloatType& multiply( float fl );
-    FloatType& divide( float fl );
+    FloatType& operator+=( float fl );
+    FloatType& operator-=( float fl);
+    FloatType& operator*=( float fl );
+    FloatType& operator/=( float fl );
     
     FloatType& pow( float fl);
     FloatType& pow( const FloatType& fl );
@@ -234,10 +234,10 @@ struct DoubleType
     
     operator double() const { return *value; }
     
-    DoubleType& add( double db );
-    DoubleType& subtract( double db );
-    DoubleType& multiply( double db );
-    DoubleType& divide( double db );
+    DoubleType& operator+=( double db );
+    DoubleType& operator-=( double db );
+    DoubleType& operator*=( double db );
+    DoubleType& operator/=( double db );
     
     DoubleType& pow( double db );
     DoubleType& pow( const DoubleType& );
@@ -260,10 +260,10 @@ struct IntType
     
     operator int() const { return *value; }
     
-    IntType& add( int it );
-    IntType& subtract( int it );
-    IntType& multiply( int it );
-    IntType& divide( int it );
+    IntType& operator+=( int it );
+    IntType& operator-=( int it );
+    IntType& operator*=( int it );
+    IntType& operator/=( int it );
     
     IntType& pow( int it );
     IntType& pow( const IntType& );
@@ -277,25 +277,25 @@ private:
 
 // Float
 
-FloatType& FloatType::add( float fl )
+FloatType& FloatType::operator+=( float fl )
 {
     *value += fl;
     return *this;
 }
 
-FloatType& FloatType::subtract( float fl )
+FloatType& FloatType::operator-=( float fl )
 {
     *value -= fl;
     return *this;
 }
 
-FloatType& FloatType::multiply( float fl )
+FloatType& FloatType::operator*=( float fl )
 {
     *value *= fl;
     return *this;
 }
 
-FloatType& FloatType::divide( float fl )
+FloatType& FloatType::operator/=( float fl )
 {
     if ( fl == 0.f )
     {
@@ -334,25 +334,25 @@ FloatType& FloatType::pow( const IntType& it )
 
 // Double
 
-DoubleType& DoubleType::add( double db )
+DoubleType& DoubleType::operator+=( double db )
 {
     *value += db;
     return *this;
 }
 
-DoubleType& DoubleType::subtract( double db )
+DoubleType& DoubleType::operator-=( double db )
 {
     *value -= db;
     return *this;
 }
 
-DoubleType& DoubleType::multiply( double db )
+DoubleType& DoubleType::operator*=( double db )
 {
     *value *= db;
     return *this;
 }
 
-DoubleType& DoubleType::divide( double db )
+DoubleType& DoubleType::operator/=( double db )
 {
     if ( db == 0.0 )
     {
@@ -391,25 +391,25 @@ DoubleType& DoubleType::pow( const IntType& it )
 
 // Int
 
-IntType& IntType::add( int it )
+IntType& IntType::operator+=( int it )
 {
     *value += it;
     return *this;
 }
 
-IntType& IntType::subtract( int it )
+IntType& IntType::operator-=( int it )
 {
     *value -= it;
     return *this;
 }
 
-IntType& IntType::multiply( int it )
+IntType& IntType::operator*=( int it )
 {
     *value *= it;
     return *this;
 }
 
-IntType& IntType::divide( int it )
+IntType& IntType::operator/=( int it )
 {
     if ( it == 0)
     {
@@ -494,14 +494,14 @@ void part3()
     IntType it ( 34 );
     DoubleType pi( 3.14 );
 
-    std::cout << "The result of FloatType^4 divided by IntType is: " << ft.multiply( ft ).multiply( ft ).divide( it ) << std::endl;
-    std::cout << "The result of DoubleType times 3 plus IntType is : " << dt.multiply( 3 ).add( it ) << std::endl;
-    std::cout << "The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: " << it.divide( static_cast<int>(pi) ).multiply( static_cast<int>(dt) ).subtract( static_cast<int>(ft) ) << std::endl;
+    std::cout << "The result of FloatType^4 divided by IntType is: " << ft.operator*=( ft ).operator*=( ft ).operator/=( it ) << std::endl;
+    std::cout << "The result of DoubleType times 3 plus IntType is : " << dt.operator*=( 3 ).operator+=( it ) << std::endl;
+    std::cout << "The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: " << it.operator/=( static_cast<int>(pi) ).operator*=( static_cast<int>(dt) ).operator/=( static_cast<int>(ft) ) << std::endl;
     std::cout << "An operation followed by attempts to divide by 0, which are ignored and warns user: " << std::endl;
-    std::cout << it.multiply(it).divide(0).divide(0.0f).divide(0.0) << std::endl;
+    std::cout << it.operator*=(it).operator/=(0).operator/=(0.0f).operator/=(0.0) << std::endl;
     
-    std::cout << "FloatType x IntType  =  " << it.multiply( static_cast<int>(ft) ) << std::endl;
-    std::cout << "(IntType + DoubleType + FloatType) x 24 = " << it.add( static_cast<int>(dt) ).add( static_cast<int>(ft) ).multiply( 24 ) << std::endl;
+    std::cout << "FloatType x IntType  =  " << it.operator*=( static_cast<int>(ft) ) << std::endl;
+    std::cout << "(IntType + DoubleType + FloatType) x 24 = " << it.operator+=( static_cast<int>(dt) ).operator+=( static_cast<int>(ft) ).operator*=( 24 ) << std::endl;
 }
 
 void part4()
@@ -598,25 +598,25 @@ int main()
     DoubleType dt ( 2 );
     IntType it ( 2 ) ;
 
-    std::cout << "FloatType add result=" << ft.add( 2.0f ) << std::endl;
-    std::cout << "FloatType subtract result=" << ft.subtract( 2.0f ) << std::endl;
-    std::cout << "FloatType multiply result=" << ft.multiply( 2.0f ) << std::endl;
-    std::cout << "FloatType divide result=" << ft.divide( 16.0f) << std::endl << std::endl;
+    std::cout << "FloatType add result=" << ft.operator+=( 2.0f ) << std::endl;
+    std::cout << "FloatType subtract result=" << ft.operator-=( 2.0f ) << std::endl;
+    std::cout << "FloatType multiply result=" << ft.operator*=( 2.0f ) << std::endl;
+    std::cout << "FloatType divide result=" << ft.operator/=( 16.0f) << std::endl << std::endl;
 
-    std::cout << "DoubleType add result=" << dt.add(2.0) << std::endl;
-    std::cout << "DoubleType subtract result=" << dt.subtract(2.0) << std::endl;
-    std::cout << "DoubleType multiply result=" << dt.multiply(2.0) << std::endl;
-    std::cout << "DoubleType divide result=" << dt.divide(static_cast<double>(5.f)) << std::endl << std::endl;
+    std::cout << "DoubleType add result=" << dt.operator+=(2.0) << std::endl;
+    std::cout << "DoubleType subtract result=" << dt.operator-=(2.0) << std::endl;
+    std::cout << "DoubleType multiply result=" << dt.operator*=(2.0) << std::endl;
+    std::cout << "DoubleType divide result=" << dt.operator/=(static_cast<double>(5.f)) << std::endl << std::endl;
 
-    std::cout << "IntType add result=" << it.add(2) << std::endl;
-    std::cout << "IntType subtract result=" << it.subtract(2) << std::endl;
-    std::cout << "IntType multiply result=" << it.multiply(2) << std::endl;
-    std::cout << "IntType divide result=" << it.divide(3) << std::endl << std::endl;
-    std::cout << "Chain calculation = " << it.multiply(1000).divide(2).subtract(10).add(100) << std::endl;
+    std::cout << "IntType add result=" << it.operator+=(2) << std::endl;
+    std::cout << "IntType subtract result=" << it.operator-=(2) << std::endl;
+    std::cout << "IntType multiply result=" << it.operator*=(2) << std::endl;
+    std::cout << "IntType divide result=" << it.operator/=(3) << std::endl << std::endl;
+    std::cout << "Chain calculation = " << it.operator*=(1000).operator/=(2).operator-=(10).operator+=(100) << std::endl;
 
     // FloatType object instanciation and method tests
     // --------
-    std::cout << "New value of ft = (ft + 3.0f) * 1.5f / 5.0f = " << ft.add( 3.0f ).multiply(1.5f).divide(5.0f) << std::endl;
+    std::cout << "New value of ft = (ft + 3.0f) * 1.5f / 5.0f = " << ft.operator+=( 3.0f ).operator*=(1.5f).operator/=(5.0f) << std::endl;
        
     std::cout << "---------------------\n" << std::endl;
     
@@ -626,16 +626,16 @@ int main()
     std::cout << "Initial value of it: " << it << std::endl;
     // --------
     std::cout << "Use of function concatenation (mixed type arguments)" << std::endl;
-    std::cout << "New value of dt = (dt * it) / 5.0f + ft = " << dt.multiply(it).divide(static_cast<double>(5.0f)).add(static_cast<double>(ft)) << std::endl;
+    std::cout << "New value of dt = (dt * it) / 5.0f + ft = " << dt.operator*=(it).operator/=(static_cast<double>(5.0f)).operator+=(static_cast<double>(ft)) << std::endl;
 
     std::cout << "---------------------\n" << std::endl;
     
     // Intercept division by 0
     // --------
     std::cout << "Intercept division by 0" << std::endl;
-    std::cout << "New value of it = it / 0 = " << it.divide(0) << std::endl;
-    std::cout << "New value of ft = ft / 0 = " << ft.divide(0) << std::endl;
-    std::cout << "New value of dt = dt / 0 = " << dt.divide(0) << std::endl;
+    std::cout << "New value of it = it / 0 = " << it.operator/=(0) << std::endl;
+    std::cout << "New value of ft = ft / 0 = " << ft.operator/=(0) << std::endl;
+    std::cout << "New value of dt = dt / 0 = " << dt.operator/=(0) << std::endl;
 
     std::cout << "---------------------\n" << std::endl;
 
