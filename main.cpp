@@ -458,23 +458,17 @@ struct Point
 
     Point& multiply(FloatType& fl)
     {
-        x *= fl;
-        y *= fl;
-        return *this;
+        return multiply( static_cast<float>(fl ));
     }
 
     Point& multiply(DoubleType& db)
     {
-        x *= static_cast<float>(db);
-        y *= static_cast<float>(db);
-        return *this;
+        return multiply( static_cast<float>(db) );
     }
     
     Point& multiply(IntType& it)
     {
-        x *= it;
-        y *= it;
-        return *this;
+        return multiply( static_cast<float>(it) );
     }
 
     void toString()
