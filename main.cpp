@@ -1,44 +1,90 @@
 /*
-Project 4: Part 5 / 9
- video: Chapter 5 Part 2
- Operator Overloading.
-
-Do not delete your previous main.
-
- Create a branch named Part5
+Project 4 - Part 6 / 9
+Video: Chapter 5 Part 3
+ 
+Create a branch named Part6
+ 
+ Lambdas
+ 
+    Do not delete your previous main. you will be adding to it.
 
     Build/Run often with this task to make sure you're not breaking the code with each step.
     I recommend committing after you get each step working so you can revert to a working version easily if needed.
  
- 1) replace the add/subtract/multiply/etc functions in your UDTs with overloaded math operators
-        e.g. add() would become operator+=() because it modifies the internal heap-allocated object.
-        The easiest way to do this is to just rename your member functions.
-        Do not: delete your member functions and add new ones.  Simply rename them
-        You do not need to change the Point class's multiply() functions.
+ 1) add two member functions named "apply()" to each of your Heap-Allocated Numeric Type wrappers.
+         both apply() functions should work with chaining
  
- 2) Your overloaded operators should only take primitives, passed by value.
-    since they are passed by value, they do not need to be const.
+ 2) One of the apply() functions should takes a std::function<> object as the function argument.
+    the std::function<> object should return *this;
  
- 3) don't delete your conversion functions.
+ 3) the other apply() function should take a function pointer. 
+    the function pointer should return void.
  
- 4) your main() function should be the same as Project 4 part 4,
-    excluding the changes made due to 1)
-     
- 5) delete the example below after it makes sense how your code will change due to 1).
+ 4) Make both of the member functions's Callable Function Parameter use your owned object as it's single parameter.
+         e.g. if you manage your owned object via std::unique_ptr<T>, you'd use this for your std::function argument:
+             std::function< OwnedT&(std::unique_ptr<T>&)>
+             
+         if you managed your owned object via a raw pointer, you'd use this for your std::function argument:
+             std::function<OwnedT&(T&)>    
+ 
+ 5) call that Callable Function Parameter in the apply() member function.
+         be sure to practice safe std::function usage (make sure it's not a nullptr function being called)
+ 
+ 6) copy the part6() function below and paste it after part4()
+ 7) call part6() after part4() is called at the end of main().
+
+ 8) fill in the missing arguments in part6 such that you produce the expected output.
+
+ 9) Make your lambda & free function update the value of your held object
+ 
+ 
+build/run to make sure you don't have any errors
+ 
+ If you need to see an example, look at https://bitbucket.org/MatkatMusic/pfmcpptasks/src/master/Projects/Project4/Part6Example.cpp
  */
 
- /*
- 6) compile/link/run to make sure you don't have any errors or warnings.
+void part6()
+{
+    FloatType ft3(3.0f);
+    DoubleType dt3(4.0);
+    IntType it3(5);
+    
+    std::cout << "Calling FloatType::apply() using a lambda (adds 7.0f) and FloatType as return type:" << std::endl;
+    std::cout << "ft3 before: " << ft3 << std::endl;
+    ft3.apply( [](){} );
+    std::cout << "ft3 after: " << ft3 << std::endl;
+    std::cout << "Calling FloatType::apply() using a free function (adds 7.0f) and void as return type:" << std::endl;
+    std::cout << "ft3 before: " << ft3 << std::endl;
+    ft3.apply(myFloatFreeFunct);
+    std::cout << "ft3 after: " << ft3 << std::endl;
+    std::cout << "---------------------\n" << std::endl;
 
- 7) your program should produce the exact same output as Project 4 part 4, listed below.
-    use https://www.diffchecker.com/diff to make sure it is the same.
- */
+    std::cout << "Calling DoubleType::apply() using a lambda (adds 6.0) and DoubleType as return type:" << std::endl;
+    std::cout << "dt3 before: " << dt3 << std::endl;
+    dt3.apply( [](){} );
+    std::cout << "dt3 after: " << dt3 << std::endl;
+    std::cout << "Calling DoubleType::apply() using a free function (adds 6.0) and void as return type:" << std::endl;
+    std::cout << "dt3 before: " << dt3 << std::endl;
+    dt3.apply(myDoubleFreeFunct);
+    std::cout << "dt3 after: " << dt3 << std::endl;
+    std::cout << "---------------------\n" << std::endl;
+
+    std::cout << "Calling IntType::apply() using a lambda (adds 5) and IntType as return type:" << std::endl;
+    std::cout << "it3 before: " << it3 << std::endl;
+    it3.apply( [](){} );
+    std::cout << "it3 after: " << it3 << std::endl;
+    std::cout << "Calling IntType::apply() using a free function (adds 5) and void as return type:" << std::endl;
+    std::cout << "it3 before: " << it3 << std::endl;
+    it3.apply(myIntFreeFunct);
+    std::cout << "it3 after: " << it3 << std::endl;
+    std::cout << "---------------------\n" << std::endl;    
+}
 
 /*
 your program should generate the following output EXACTLY.
-This includes any warnings included below.
-
+This includes the warnings.
 The output should have zero warnings.
+
 
 
 FloatType add result=4
@@ -62,11 +108,11 @@ New value of ft = (ft + 3.0f) * 1.5f / 5.0f = 0.975
 
 Initial value of dt: 0.8
 Initial value of it: 590
-Use of function concatenation (mixed type arguments)
+Use of function concatenation (mixed type arguments) 
 New value of dt = (dt * it) / 5.0f + ft = 95.375
 ---------------------
 
-Intercept division by 0
+Intercept division by 0 
 New value of it = it / 0 = error: integer division by zero is an error and will crash the program!
 590
 New value of ft = ft / 0 = warning: floating point division by zero!
@@ -78,28 +124,28 @@ inf
 The result of FloatType^4 divided by IntType is: 26.9136
 The result of DoubleType times 3 plus IntType is : 67.3
 The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: 711
-An operation followed by attempts to divide by 0, which are ignored and warns user:
+An operation followed by attempts to divide by 0, which are ignored and warns user: 
 error: integer division by zero is an error and will crash the program!
 error: integer division by zero is an error and will crash the program!
 error: integer division by zero is an error and will crash the program!
 505521
 FloatType x IntType  =  13143546
 (IntType + DoubleType + FloatType) x 24 = 315447336
-Power tests with FloatType
+Power tests with FloatType 
 pow(ft1, floatExp) = 2^2 = 4
 pow(ft1, itExp) = 4^2 = 16
 pow(ft1, ftExp) = 16^2 = 256
 pow(ft1, dtExp) = 256^2 = 65536
 ---------------------
 
-Power tests with DoubleType
+Power tests with DoubleType 
 pow(dt1, doubleExp) = 2^2 = 4
 pow(dt1, itExp) = 4^2 = 16
 pow(dt1, ftExp) = 16^2 = 256
 pow(dt1, dtExp) = 256^2 = 65536
 ---------------------
 
-Power tests with IntType
+Power tests with IntType 
 pow(it1, intExp) = 2^2 = 4
 pow(it1, itExp) = 4^2 = 16
 pow(it1, ftExp) = 16^2 = 256
@@ -130,9 +176,33 @@ Multiplication factor: 5
 Point { x: 15, y: 20 }
 ---------------------
 
+Calling FloatType::apply() using a lambda (adds 7.0f) and FloatType as return type:
+ft3 before: 3
+ft3 after: 10
+Calling FloatType::apply() using a free function (adds 7.0f) and void as return type:
+ft3 before: 10
+ft3 after: 17
+---------------------
+
+Calling DoubleType::apply() using a lambda (adds 6.0) and DoubleType as return type:
+dt3 before: 4
+dt3 after: 10
+Calling DoubleType::apply() using a free function (adds 6.0) and void as return type:
+dt3 before: 10
+dt3 after: 16
+---------------------
+
+Calling IntType::apply() using a lambda (adds 5) and IntType as return type:
+it3 before: 5
+it3 after: 10
+Calling IntType::apply() using a free function (adds 5) and void as return type:
+it3 before: 10
+it3 after: 15
+---------------------
+
 good to go!
 
-Use a service like https://www.diffchecker.com/diff to compare your output.
+Use a service like https://www.diffchecker.com/diff to compare your output. 
 */
 
 
