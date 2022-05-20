@@ -207,7 +207,7 @@ struct IntType;
 
 struct FloatType
 {
-    explicit FloatType(float floatOnHeap) : value( new float(floatOnHeap) ) { }
+   FloatType(float floatOnHeap) : value( new float(floatOnHeap) ) { }
     ~FloatType()
     {
         delete value;
@@ -356,7 +356,7 @@ FloatType& FloatType::apply( std::function<FloatType&(float&)> func )
     return *this;
 }
 
-FloatType& FloatType::apply( void(*funcPtr)(float&) )
+FloatType& FloatType::apply( void(*funcPtr)(float& fl) )
 {
     if ( funcPtr != nullptr )
     {
@@ -556,6 +556,21 @@ private:
     float x{0}, y{0};
 };
 
+void myFloatFreeFunct( float& fl )
+{
+    fl += 7.0f;
+}
+
+void myDoubleFreeFunct( double& db )
+{
+    db += 6.0;
+}
+
+void myIntFreeFunct( int& it )
+{
+    it += 5;
+}
+
 void part3()
 {
     FloatType ft( 5.5f );
@@ -689,7 +704,11 @@ void part6()
     
     std::cout << "Calling FloatType::apply() using a lambda (adds 7.0f) and FloatType as return type:" << std::endl;
     std::cout << "ft3 before: " << ft3 << std::endl;
-    ft3.apply( [](){} );
+    ft3.apply( [&ft3](float& fl) -> FloatType&
+    { 
+        fl += 7.0f; 
+        return ft3;
+    } );
     std::cout << "ft3 after: " << ft3 << std::endl;
     std::cout << "Calling FloatType::apply() using a free function (adds 7.0f) and void as return type:" << std::endl;
     std::cout << "ft3 before: " << ft3 << std::endl;
@@ -699,7 +718,11 @@ void part6()
 
     std::cout << "Calling DoubleType::apply() using a lambda (adds 6.0) and DoubleType as return type:" << std::endl;
     std::cout << "dt3 before: " << dt3 << std::endl;
-    dt3.apply( [](){} );
+    dt3.apply( [&dt3](double& db) -> DoubleType&
+    {
+        db += 6.0;
+        return dt3;
+    } );
     std::cout << "dt3 after: " << dt3 << std::endl;
     std::cout << "Calling DoubleType::apply() using a free function (adds 6.0) and void as return type:" << std::endl;
     std::cout << "dt3 before: " << dt3 << std::endl;
@@ -709,7 +732,11 @@ void part6()
 
     std::cout << "Calling IntType::apply() using a lambda (adds 5) and IntType as return type:" << std::endl;
     std::cout << "it3 before: " << it3 << std::endl;
-    it3.apply( [](){} );
+    it3.apply( [&it3](int& it) -> IntType&
+    {
+        it += 5;
+        return it3;
+    } );
     std::cout << "it3 after: " << it3 << std::endl;
     std::cout << "Calling IntType::apply() using a free function (adds 5) and void as return type:" << std::endl;
     std::cout << "it3 before: " << it3 << std::endl;
