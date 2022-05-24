@@ -235,6 +235,7 @@ struct HeapA
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <algorithm>
 
 
 // Float Type
@@ -242,9 +243,7 @@ template<typename T>
 struct Numeric
 {
     using Type = T;
-    Numeric( Type numOnHeap ) : value( std::unique_ptr<Type>(numOnHeap) )
-    {
-    }
+    explicit Numeric( Type numOnHeap ) : value( std::make_unique<Type>(numOnHeap) ) { }
     ~Numeric()
     {
         value.reset( nullptr );
@@ -269,19 +268,26 @@ struct Numeric
         return *this;
     }
     
+    template <typename N>
     Numeric& operator/=( Type num )
     {
-        if ( num == 0.f )
+        if constexpr ( std::is_same<Type, int>::value )
+            if constexpr ( std::is_same<N, int>::value )
+                if ( num == 0 )
+                {
+                    std::cout << "error: integer division by zero is an error and will crash the program!\n" << std::endl;
+                    return *this;
+                }
+            else if ( std::abs( num ) < std::numeric_limits<N>::epsilon() )
+            {
+                std::cout << "can't divide integers by zero!\n" << std::endl;
+                return *this;
+            }
+        else if ( std::abs( num ) < std::numeric_limits<N>::epsilon() )
         {
-            std::cout << "warning: floating point division by zero!" << std::endl;
+            std::cout << "warning: floating point division by zero!\n" << std::endl;
             return *this;
         }
-        else if ( num == 0 )
-        {
-            std::cout << "error: integer division by zero is an error and will crash the program!" << std::endl;
-            return *this;
-        }
-        
         *value /= num;
         return *this;
     }
@@ -295,25 +301,25 @@ struct Numeric
     {
         if ( Type != nullptr )
         {
-            return Type (value);
+            return Type (*value);
         }
         return *this;
     }
     
-    Numeric& apply( void(*funcPtr)(std::unique_ptr<Type>&) )
+    Numeric& apply( void(*funcPtr)(Type&) )
     {
         if ( funcPtr != nullptr )
         {
-            funcPtr( value );
+            funcPtr( *value );
         }
         return *this;
     }
 private:
    // float* value = nullptr;
     std::unique_ptr<Type> value;
-    Numeric& powInternal( const Type& n )
+    Numeric& powInternal( const Type& num )
     {
-        *value = static_cast<Type>( std::pow(*value, n) );
+        *value = static_cast<Type>( std::pow(*value, num) );
         return *this;
     }
 };
@@ -321,8 +327,8 @@ private:
 template <>
 struct Numeric<double>
 {
-    using Type = double;
-    Numeric( Type doubleOnHeap ) : value( new Type (doubleOnHeap) ) { }
+    using Type = double; // #6
+    explicit Numeric( Type doubleOnHeap ) : value( std::make_unique<Type>(doubleOnHeap) ) { }
     ~Numeric()
     {
         value.reset( nullptr );
@@ -364,12 +370,10 @@ struct Numeric<double>
         return powInternal( db );
     }
 
-    Numeric& apply( std::function<Numeric&>( std::unique_ptr<Type&> func ) )
+    template <typename Callable>   // #7
+    Numeric& apply( Callable callable )
     {
-        if( func != nullptr )
-        {
-            return func( *value );
-        }
+        callable(*value);
         return *this;
     }
     
@@ -405,10 +409,9 @@ private:
 
 // #5
 template <typename NumFunc>
-void myNumericFreeFunct( std::unique_ptr<NumFunc>& num )
+void myNumericFreeFunct( std::unique_ptr<NumFunc>& num)
 {
-    // Probably something needs to be written, dont know what to write here
-    // NumFunc *= static_cast<NumFunc>(7.0);
+    
 }
 
 void myFloatFreeFunct( float& fl )
@@ -475,12 +478,12 @@ void part4()
     Numeric<float>  ft1(2);
     Numeric<double> dt1(2);
     Numeric<int>    it1(2);
-    Numeric<float>  floatExp = 2.0f;
-    Numeric<double> doubleExp = 2.0;
-    Numeric<int>    intExp = 2;
     Numeric<int>    itExp(2);
     Numeric<float>  ftExp(2.0f);
     Numeric<double> dtExp(2.0);
+    float  floatExp = 2.0f;
+    double doubleExp = 2.0;
+    int    intExp = 2;
     
     // Power tests with FloatType
     std::cout << "Power tests with FloatType" << std::endl;
@@ -512,7 +515,7 @@ void part4()
     Numeric<float>  ft2(3.0f);
     Numeric<double> dt2(4.0);
     Numeric<int>    it2(5);
-    Numeric<float>  floatMul = 6.0f;
+    float  floatMul = 6.0f;
 
     // Point tests with float
     std::cout << "Point tests with float argument:" << std::endl;
@@ -611,7 +614,10 @@ void part7()
 
     {
         using Type = decltype(ft3)::Type;   // #4
-        ft3.apply( [](std::unique...){} );
+        ft3.apply( [](std::unique...)
+        {
+        
+        } );
     }
 
     std::cout << "ft3 after: " << ft3 << std::endl;
@@ -632,7 +638,7 @@ void part7()
     std::cout << "dt3 after: " << dt3 << std::endl;
     std::cout << "Calling Numeric<double>::apply() twice using a free function (adds 7.0) and void as return type:" << std::endl;
     std::cout << "dt3 before: " << dt3 << std::endl;
-    dt3.apply(myNumericFreeFunct<double>).apply(myNumericFreeFunct<double>); // This calls the templated apply fcn
+    dt3.apply(myNumericFreeFunct<double>).apply(myNumericFreeFunct<double>); // This calls the templated apply
     std::cout << "dt3 after: " << dt3 << std::endl;
     std::cout << "---------------------\n" << std::endl;
 
