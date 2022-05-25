@@ -248,25 +248,25 @@ struct Numeric
     
     operator Type() const { return *value; }
     
-    Numeric& operator+=( Type num )
+    Numeric& operator+=( const Type& num )
     {
         *value += num;
         return *this;
     }
     
-    Numeric& operator-=( Type num )
+    Numeric& operator-=( const Type& num )
     {
         *value -= num;
         return *this;
     }
-    Numeric& operator*=( Type num )
+    Numeric& operator*=( const Type& num )
     {
         *value *= num;
         return *this;
     }
     
     template <typename N>
-    Numeric& operator/=( N num )
+    Numeric& operator/=( const N& num )
     {
         if constexpr ( std::is_same<Type, int>::value )
         {
@@ -298,11 +298,11 @@ struct Numeric
         return powInternal( static_cast<Type>( num ) );
     }
     
-    Numeric& apply( std::function<Numeric&(Type&)> Type )
+    Numeric& apply( std::function<Numeric&(Type&)> type )
     {
-        if ( Type != nullptr )
+        if ( type != nullptr )
         {
-            return Type( *value );
+            return type( *value );
         }
         return *this;
     }
@@ -613,7 +613,9 @@ void part7()
 
     {
         using Type = decltype(ft3)::Type;   // #4
-        ft3.apply( [&ft3]( Type& num ) -> Numeric<float>&
+        using RtnType = decltype(ft3)::Type;
+        
+        ft3.apply( [&ft3]( Type& num ) -> Numeric<RtnType>&
         {
             num += 7.0f;
             return ft3;
@@ -632,7 +634,9 @@ void part7()
 
     {
         using Type = decltype(dt3)::Type;  //#4
-        dt3.apply( [&dt3]( Type& num ) -> Numeric<double>&
+        using RtnType = decltype(dt3)::Type;
+        
+        dt3.apply( [&dt3]( Type& num ) -> Numeric<RtnType>&
         {
             num += 6.0;
             return dt3;
@@ -651,7 +655,9 @@ void part7()
 
     {
         using Type = decltype(it3)::Type;  // #4
-        it3.apply( [&it3]( Type& num ) -> Numeric<int>&
+        using RtnType = decltype(it3)::Type;
+        
+        it3.apply( [&it3]( Type& num ) -> Numeric<RtnType>&
         {
             num += 5;
             return it3;
