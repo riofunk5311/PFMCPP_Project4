@@ -613,9 +613,9 @@ void part7()
 
     {
         using Type = decltype(ft3)::Type;   // #4
-        using RtnType = decltype(ft3)::Type;
+        using RtnType = decltype(ft3);
         
-        ft3.apply( [&ft3]( Type& num ) -> Numeric<RtnType>&
+        ft3.apply( [&ft3]( Type& num ) -> RtnType&
         {
             num += 7.0f;
             return ft3;
@@ -634,9 +634,9 @@ void part7()
 
     {
         using Type = decltype(dt3)::Type;  //#4
-        using RtnType = decltype(dt3)::Type;
+        using RtnType = decltype(dt3);
         
-        dt3.apply( [&dt3]( Type& num ) -> Numeric<RtnType>&
+        dt3.apply( [&dt3]( Type& num ) -> RtnType&
         {
             num += 6.0;
             return dt3;
@@ -655,9 +655,9 @@ void part7()
 
     {
         using Type = decltype(it3)::Type;  // #4
-        using RtnType = decltype(it3)::Type;
+        using RtnType = decltype(it3);
         
-        it3.apply( [&it3]( Type& num ) -> Numeric<RtnType>&
+        it3.apply( [&it3]( Type& num ) -> RtnType&
         {
             num += 5;
             return it3;
