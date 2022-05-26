@@ -53,7 +53,7 @@ struct Numeric
 /*
  4) remove your specialized <double> template of your Numeric<T> class from the previous task (ch5 p04)
     replace the 2 apply() functions in your Numeric<T> with the single templated apply() function from the specialized <double> template.
- */
+ */     
 
 /*
  5) Template your pow() function the same way you templated the overloaded math operators
@@ -244,7 +244,6 @@ private:
 template <typename NumericType>
 int Temporary<NumericType>::counter;
 
-// Float Type
 template<typename T>
 struct Numeric
 {
@@ -256,21 +255,22 @@ struct Numeric
     }
     
     operator Type() const { return *value; }
-    
+
+    // #3
     Numeric& operator+=( const Type& num )
     {
-        *value += num;
+        *value += static_cast<Numeric>(num);
         return *this;
     }
     
     Numeric& operator-=( const Type& num )
     {
-        *value -= num;
+        *value -= static_cast<Numeric>(num);
         return *this;
     }
     Numeric& operator*=( const Type& num )
     {
-        *value *= num;
+        *value *= static_cast<Numeric>(num);
         return *this;
     }
     
@@ -298,7 +298,7 @@ struct Numeric
             std::cout << "warning: floating point division by zero!" << std::endl;
         }
             
-        *value /= num;
+        *value /= static_cast<Numeric>(num);
         return *this;
     }
     
@@ -307,80 +307,8 @@ struct Numeric
         return powInternal( static_cast<Type>( num ) );
     }
     
-    Numeric& apply( std::function<Numeric&(Type&)> type )
-    {
-        if ( type != nullptr )
-        {
-            return type( *value );
-        }
-        return *this;
-    }
-    
-    Numeric& apply( void( *funcPtr )( Type& ) )
-    {
-        if ( funcPtr != nullptr )
-        {
-            funcPtr( *value );
-        }
-        return *this;
-    }
-private:
-   // float* value = nullptr;
-    std::unique_ptr<Type> value;
-    Numeric& powInternal( const Type& num )
-    {
-        *value = static_cast<Type>( std::pow(*value, num) );
-        return *this;
-    }
-};
-
-template <>
-struct Numeric<double>
-{
-    using Type = double; // #6
-    explicit Numeric( Type doubleOnHeap ) : value( std::make_unique<Type>(doubleOnHeap) ) { }
-    ~Numeric()
-    {
-        value.reset( nullptr );
-    }
-    
-    operator Type() const { return *value; }
-    
-    Numeric& operator+=( Type db )
-    {
-        *value += db;
-        return *this;
-    }
-    
-    Numeric& operator-=( Type db )
-    {
-        *value -= db;
-        return *this;
-    }
-    
-    Numeric& operator*=( Type db )
-    {
-        *value *= db;
-        return *this;
-    }
-    
-    Numeric& operator/=( Type db )
-    {
-        if ( db == 0.0 )
-        {
-            std::cout << "warning: floating point division by zero!" << std::endl;
-        }
-        
-        *value /= db;
-        return *this;
-    }
-    
-    Numeric& pow( Type db )
-    {
-        return powInternal( static_cast<Type>( db ) );
-    }
-
-    template <typename Callable>   // #7
+    // #4
+    template <typename Callable>
     Numeric& apply( Callable callable )
     {
         callable( *value );
@@ -388,9 +316,9 @@ struct Numeric<double>
     }
 private:
     std::unique_ptr<Type> value;
-    Numeric& powInternal( const Type& db )
+    Numeric& powInternal( const Type& num )
     {
-        *value = static_cast<Type>( std::pow( *value, db )  );
+        *value = static_cast<Type>( std::pow(*value, num) );
         return *this;
     }
 };
