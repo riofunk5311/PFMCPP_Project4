@@ -171,7 +171,7 @@ struct Numeric
 {
     using Type = Temporary<NumericType>;
     explicit Numeric( Type numOnHeap ) : value( std::make_unique<Type>(numOnHeap) ) { }
-    Numeric() = default;
+    ~Numeric() = default;
 
     template <typename OtherType>
     Numeric& operator=( const OtherType& num )
