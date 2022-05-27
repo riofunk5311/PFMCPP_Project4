@@ -171,11 +171,8 @@ struct Numeric
 {
     using Type = Temporary<NumericType>;
     explicit Numeric( Type numOnHeap ) : value( std::make_unique<Type>(numOnHeap) ) { }
-    ~Numeric()
-    {
-        value.reset( nullptr );
-    }
-    
+    Numeric() = default;
+
     template <typename OtherType>
     Numeric& operator=( const OtherType& num )
     {
@@ -204,12 +201,12 @@ struct Numeric
         return *this;
     }
     
-    template <typename OtherType>
-    Numeric& operator/=( const OtherType& num )
+    template <typename N>
+    Numeric& operator/=( const N& num )
     {
-        if constexpr ( std::is_same<OtherType, int>::value )
+        if constexpr ( std::is_same<Type, int>::value )
         {
-            if constexpr ( std::is_same<OtherType, int>::value )
+            if constexpr ( std::is_same<N, int>::value )
             {
                 if ( num == 0 )
                 {
@@ -217,13 +214,13 @@ struct Numeric
                     return *this;
                 }
             }
-            else if ( std::abs( num ) <= std::numeric_limits<OtherType>::epsilon() )
+            else if ( std::abs( num ) <= std::numeric_limits<N>::epsilon() )
             {
                 std::cout << "can't divide integers by zero!" << std::endl;
                 return *this;
             }
         }
-        else if ( std::abs( num ) <= std::numeric_limits<OtherType>::epsilon() )
+        else if ( std::abs( num ) <= std::numeric_limits<N>::epsilon() )
         {
             std::cout << "warning: floating point division by zero!" << std::endl;
         }
