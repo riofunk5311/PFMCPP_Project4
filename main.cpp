@@ -6,20 +6,12 @@ Create a branch named Part9
 
  Rule of 3-5-0 and S.R.P.
  
- DO NOT EDIT YOUR PREVIOUS main(). 
+ DO NOT EDIT YOUR PREVIOUS main().
  
  1) add the Leak Detector files from Project5
  
  2) move these macros after the JUCE_LEAK_DETECTOR macro :
  */
-
-#define JUCE_DECLARE_NON_COPYABLE(className) \
-            className (const className&) = delete;\
-            className& operator= (const className&) = delete;
-
-#define JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(className) \
-            JUCE_DECLARE_NON_COPYABLE(className) \
-            JUCE_LEAK_DETECTOR(className)
 
 /*
  3) add JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary) to the end of the  Temporary<> struct
@@ -67,40 +59,46 @@ i squared: 81
 I'm a Temporary<i> object, #5
 i cubed: 531441
 
-Use a service like https://www.diffchecker.com/diff to compare your output. 
+Use a service like https://www.diffchecker.com/diff to compare your output.
 */
 
-#include <typeinfo>
-#include <memory>
-#include<iostream>
-#include<cmath>
-#include <functional>
-
-template<typename NumericType>
-struct Temporary
-{
-    Temporary(NumericType t) : v(t)
-    {
-        std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
-                  << counter++ << std::endl;
-    }
-
-    operator NumericType() const 
-    { 
-        return v;
-    }
-    operator NumericType&() 
-    {
-       return v;
-    }
-private:
-    static int counter;
-    NumericType v;
-};
 
 
-template<typename Type>
-int Temporary<Type>::counter = 0;
+//template<typename NumericType>
+//struct Temporary
+//{
+//    Temporary(NumericType t) : v(t)
+//    {
+//        std::cout << "I'm a Temporary<" << typeid(v).name()  << "> object, #"
+//                  << counter++ << std::endl;
+//    }
+//
+//    ~Temporary() = default;
+//
+//    Temporary (const Temporary& temp);
+//    Temporary& operator=(const Temporary& temp);
+//
+//    Temporary (Temporary& temp);
+//    Temporary& operator=(Temporary&& temp);
+//
+//    operator NumericType() const
+//    {
+//        return v;
+//    }
+//    operator NumericType&()
+//    {
+//       return v;
+//    }
+//private:
+//    static int counter;
+//    NumericType v;
+//
+//    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary); // #3
+//};
+
+
+//template<typename Type>
+//int Temporary<Type>::counter = 0;
 
 #include <iostream>
 
@@ -129,75 +127,115 @@ struct HeapA
  Wait for my code review.
  */
 
+#include "LeakedObjectDetector.h"
+#include <typeinfo>
+#include <memory>
 #include <iostream>
 #include <cmath>
 #include <functional>
-#include <memory>
 #include <utility>
-#include <typeinfo>
 
 // #1
 template<typename NumericType>
 struct Temporary
 {
-    Temporary(NumericType t) : v(t)
+    Temporary (NumericType t) : v (t)
     {
         std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
                   << counter++ << std::endl;
     }
+    
+    Temporary (const Temporary& other) : v (other.v) {}    // copy constructor
+    
+//    Temporary& operator= (const Temporary& other) // copy assignment
+//    {
+//        v = other.v;
+//        return *this;
+//    }
+//
+    Temporary (Temporary&& other) : v (std::move (other.v)) {}  // move constructor
+    
+    Temporary& operator= (Temporary&& other)  //move assignment
+    {
+        v = std::move (other.v);
+        return *this;
+    }
+   
+    ~Temporary() = default;        // destructor
+    
     /*
      revise these conversion functions to read/write to 'v' here
      hint: what qualifier do read-only functions usually have?
      */
+    
     operator NumericType() const { return v; }    // read-only function
     operator NumericType&() { return v; }         // read/write function
 private:
     static int counter;
     NumericType v;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary) // #3
 };
 
 // #2
 template <typename NumericType>
-int Temporary<NumericType>::counter = 0;
+int Temporary <NumericType>::counter = 0;
 
 // #3
-template<typename NumericType>
+template <typename NumericType>
 struct Numeric
 {
     using Type = Temporary<NumericType>;
-    explicit Numeric( Type numOnHeap ) : value( std::make_unique<Type>(numOnHeap) ) { }
+    
+    explicit Numeric (Type numOnHeap) : value (std::make_unique<Type> (numOnHeap)) {}
     ~Numeric() = default;
 
-    template <typename OtherType>
-    Numeric& operator=( const OtherType& num )
+    //Numeric (const Numeric& other) : value (std::make_unique <Numeric&> (other.value)) {} // copy constructor
+                                          
+//    Numeric& operator= (const Numeric& other) // copy assignment
+//    {
+//        *value = other.value;
+//        return *this;
+//    }
+    
+    Numeric (Numeric&& other) : value (std::make_unique<Numeric&> (std::move (other.value))) {}  // move constructor
+    
+    Numeric& operator= (Numeric&& other) // move assignment
     {
-        *value = static_cast<NumericType>(num);
+        *value = std::move (other.value);
         return *this;
     }
     
     template <typename OtherType>
-    Numeric& operator+=( const OtherType& num )
+    Numeric& operator= (const OtherType& num)
     {
-        *value += static_cast<NumericType>(num);
+        *value = static_cast <NumericType> (num);
         return *this;
     }
     
     template <typename OtherType>
-    Numeric& operator-=( const OtherType& num )
+    Numeric& operator+= (const OtherType& num)
     {
-        *value -= static_cast<NumericType>(num);
+        *value += static_cast <NumericType> (num);
         return *this;
     }
     
     template <typename OtherType>
-    Numeric& operator*=( const OtherType& num )
+    Numeric& operator-= (const OtherType& num)
     {
-        *value *= static_cast<NumericType>(num);
+        *value -= static_cast <NumericType> (num);
+        return *this;
+    }
+    
+    template <typename OtherType>
+    Numeric& operator*= (const OtherType& num)
+    {
+        *value *= static_cast <NumericType> (num);
         return *this;
     }
     
     template <typename N>
-    Numeric& operator/=( const N& num )
+    Numeric& operator/= (const N& num)
     {
         if constexpr ( std::is_same<Type, int>::value )
         {
@@ -220,13 +258,13 @@ struct Numeric
             std::cout << "warning: floating point division by zero!" << std::endl;
         }
             
-        *value /= static_cast<NumericType>(num);
+        *value /= static_cast <NumericType> (num);
         return *this;
     }
     
     // #6
     operator NumericType() const { return *value; }
-    operator NumericType&() { return *value; }
+    //operator NumericType&() { return *value; }
     
     // #5
     template <typename P>
@@ -256,6 +294,8 @@ struct Numeric
     }
 private:
     std::unique_ptr<Type> value;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Numeric) // #3
 };
 
 // // #5 cube function
