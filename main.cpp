@@ -145,16 +145,14 @@ struct Temporary
                   << counter++ << std::endl;
     }
     
-   // Temporary (const Temporary& other) : v (other.v) {}    // copy constructor
-
- Temporary (Temporary& other) : v (other.v) {}    // copy constructor
+    constexpr Temporary (Temporary& other) : v (other.v) {}    // copy constructor
     
-    Temporary& operator= (Temporary& other) // copy assignment
+    constexpr Temporary& operator= (Temporary& other) // copy assignment
     {
         v = other.v;
         return *this;
     }
-    
+
     Temporary (Temporary&& other) : v (std::move (other.v)) {}  // move constructor
     
     Temporary& operator= (Temporary&& other)  //move assignment
@@ -191,14 +189,6 @@ struct Numeric
     
     explicit Numeric (Type numOnHeap) : value (std::make_unique<Type> (numOnHeap)) {}
     ~Numeric() = default;
-
-    //Numeric (const Numeric& other) : value (std::make_unique <Numeric&> (other.value)) {} // copy constructor
-                                          
-//    Numeric& operator= (const Numeric& other) // copy assignment
-//    {
-//        *value = other.value;
-//        return *this;
-//    }
     
     Numeric (Numeric&& other) : value (std::make_unique<Numeric&> (std::move (other.value))) {}  // move constructor
     
