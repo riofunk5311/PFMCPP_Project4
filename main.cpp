@@ -145,14 +145,16 @@ struct Temporary
                   << counter++ << std::endl;
     }
     
-    Temporary (const Temporary& other) : v (other.v) {}    // copy constructor
+   // Temporary (const Temporary& other) : v (other.v) {}    // copy constructor
+
+ Temporary (Temporary& other) : v (other.v) {}    // copy constructor
     
-//    Temporary& operator= (const Temporary& other) // copy assignment
-//    {
-//        v = other.v;
-//        return *this;
-//    }
-//
+    Temporary& operator= (Temporary& other) // copy assignment
+    {
+        v = other.v;
+        return *this;
+    }
+    
     Temporary (Temporary&& other) : v (std::move (other.v)) {}  // move constructor
     
     Temporary& operator= (Temporary&& other)  //move assignment
