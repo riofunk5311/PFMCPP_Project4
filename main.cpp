@@ -62,44 +62,6 @@ i cubed: 531441
 Use a service like https://www.diffchecker.com/diff to compare your output.
 */
 
-
-
-//template<typename NumericType>
-//struct Temporary
-//{
-//    Temporary(NumericType t) : v(t)
-//    {
-//        std::cout << "I'm a Temporary<" << typeid(v).name()  << "> object, #"
-//                  << counter++ << std::endl;
-//    }
-//
-//    ~Temporary() = default;
-//
-//    Temporary (const Temporary& temp);
-//    Temporary& operator=(const Temporary& temp);
-//
-//    Temporary (Temporary& temp);
-//    Temporary& operator=(Temporary&& temp);
-//
-//    operator NumericType() const
-//    {
-//        return v;
-//    }
-//    operator NumericType&()
-//    {
-//       return v;
-//    }
-//private:
-//    static int counter;
-//    NumericType v;
-//
-//    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary); // #3
-//};
-
-
-//template<typename Type>
-//int Temporary<Type>::counter = 0;
-
 #include <iostream>
 
 struct A {};
@@ -144,14 +106,6 @@ struct Temporary
         std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
                   << counter++ << std::endl;
     }
-    
-   // Temporary (const Temporary& other) : v (other.v) {}    // copy constructor
-
-   // Temporary& operator= (const Temporary& other)          // copy assignment
-   // {
-   //     v = other.v;
-   //     return *this;
-   // }
 
     Temporary (Temporary&& other) : v (std::move (other.v)) {}  // move constructor
     
