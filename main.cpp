@@ -145,13 +145,13 @@ struct Temporary
                   << counter++ << std::endl;
     }
     
-    constexpr Temporary (Temporary& other) : v (other.v) {}    // copy constructor
-    
-    constexpr Temporary& operator= (Temporary& other) // copy assignment
-    {
-        v = other.v;
-        return *this;
-    }
+   // Temporary (const Temporary& other) : v (other.v) {}    // copy constructor
+
+   // Temporary& operator= (const Temporary& other)          // copy assignment
+   // {
+   //     v = other.v;
+   //     return *this;
+   // }
 
     Temporary (Temporary&& other) : v (std::move (other.v)) {}  // move constructor
     
@@ -160,13 +160,8 @@ struct Temporary
         v = std::move (other.v);
         return *this;
     }
-   
-    ~Temporary() = default;        // destructor
     
-    /*
-     revise these conversion functions to read/write to 'v' here
-     hint: what qualifier do read-only functions usually have?
-     */
+    ~Temporary() = default;        // destructor
     
     operator NumericType() const { return v; }    // read-only function
     operator NumericType&() { return v; }         // read/write function
@@ -187,7 +182,7 @@ struct Numeric
 {
     using Type = Temporary<NumericType>;
     
-    explicit Numeric (Type numOnHeap) : value (std::make_unique<Type> (numOnHeap)) {}
+    explicit Numeric (NumericType numOnHeap) : value (std::make_unique<Type> (numOnHeap)) {}
     ~Numeric() = default;
     
     Numeric (Numeric&& other) : value (std::make_unique<Numeric&> (std::move (other.value))) {}  // move constructor
@@ -201,28 +196,28 @@ struct Numeric
     template <typename OtherType>
     Numeric& operator= (const OtherType& num)
     {
-        *value = static_cast <NumericType> (num);
+        *value = static_cast<NumericType> (num);
         return *this;
     }
     
     template <typename OtherType>
     Numeric& operator+= (const OtherType& num)
     {
-        *value += static_cast <NumericType> (num);
+        *value += static_cast<NumericType> (num);
         return *this;
     }
     
     template <typename OtherType>
     Numeric& operator-= (const OtherType& num)
     {
-        *value -= static_cast <NumericType> (num);
+        *value -= static_cast<NumericType> (num);
         return *this;
     }
     
     template <typename OtherType>
     Numeric& operator*= (const OtherType& num)
     {
-        *value *= static_cast <NumericType> (num);
+        *value *= static_cast<NumericType> (num);
         return *this;
     }
     
@@ -250,7 +245,7 @@ struct Numeric
             std::cout << "warning: floating point division by zero!" << std::endl;
         }
             
-        *value /= static_cast <NumericType> (num);
+        *value /= static_cast<NumericType> (num);
         return *this;
     }
     
@@ -262,7 +257,7 @@ struct Numeric
     template <typename P>
     Numeric& pow( const P& num )
     {
-        *value = static_cast<NumericType>( std::pow(*value, static_cast<NumericType>(num)) );
+        *value = static_cast<NumericType> (std::pow (*value, static_cast<NumericType>(num)));
         return *this;
     }
     
@@ -290,7 +285,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Numeric) // #3
 };
 
-// // #5 cube function
+// #5 cube function
 template <typename Type>
 void cube( std::unique_ptr<Type>& num )
 {
